@@ -1,9 +1,7 @@
 @extends('template/layout')
-
 @section('judul')
-    List Produk
+List Produk
 @endsection
-
 @section('konten')
 <link rel="stylesheet" type="text/css" href="{{ url('DataTables/DataTables-
 1.10.25/css/dataTables.bootstrap4.min.css') }}">
@@ -35,7 +33,6 @@
     </thead>
 </table>
 @endsection
-
 @section('script_custom')
 <script>
         function hapusData(idProduk) {
@@ -112,16 +109,16 @@
             })
         }
 
-        // ambil_data();
+        ambil_data();
 
         $("form").on('submit', function(e){
             e.preventDefault();
             var kode = $("input[name=cari]").val();
-            // ambil_data(kode);
+            ambil_data(kode);
         })
 
         function resetTable() {
-        	$( "#data-list" ).html( "<thead> <tr> <th>No.</th> <th>Kode</th> <th>Nama</th> <th>Stok</th> <th>Harga</th> <th>Deskripsi</th> <th>Gambar</th> <th>OPSI</th> </tr> </thead>" );
+            $( "#data-list" ).html( "<tr> <th>No.</th> <th>Kode</th> <th>Nama</th> <th>Stok</th> <th>Harga</th> <th>Deskripsi</th> <th>Gambar</th> <th>OPSI</th> </tr>" );
         }
 </script>
 
