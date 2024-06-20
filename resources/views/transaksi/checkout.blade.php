@@ -23,15 +23,27 @@ Form Konfirmasi Transaksi
 		<tr>
 			<td>Provinsi</td>
 			<td>
+<<<<<<< HEAD
 				<select name="provinsi" id="provinsi" class="form-control" required="" onchange="ambil_kota()">
 				</select>
+=======
+                <select name="provinsi" id="provinsi" class="form-control" required="" onchange="ambil_kota()">
+                    <option value="">--Pilih Salah Satu--</option>
+                </select>
+>>>>>>> 4f3165b3487d4f1ecafca86b1b8a73bc719d37e3
 			</td>
 		</tr>
 		<tr>
 			<td>Kota</td>
 			<td>
+<<<<<<< HEAD
 				<select name="kota" id="kota" class="form-control" required="" onchange="ambil_kecamatan()">
 				</select>
+=======
+                <select name="kota" id="kota" class="form-control" required="" onchange="ambil_kecamatan()">
+                    <option value="">--Pilih Salah Satu--</option>
+                </select>
+>>>>>>> 4f3165b3487d4f1ecafca86b1b8a73bc719d37e3
 			</td>
 		</tr>
 		<tr>
@@ -54,6 +66,7 @@ Form Konfirmasi Transaksi
 
 @section('script_custom')
 <script>
+<<<<<<< HEAD
 	function ambil_prov() {
 		var link = '{{ url("api/provinsi") }}';
 		$.ajax(link, {
@@ -103,3 +116,53 @@ Form Konfirmasi Transaksi
 </script>
 
 @endsection
+=======
+function ambil_prov() {
+    var link = '{{ url("api/provinsi") }}';
+
+    $.ajax(link, {
+        type: 'GET',
+        success : function (data, status, xhr) {
+            $('#provinsi').html(data);
+        },
+        error : function (jqXHR, textStatus, errorMsg) {
+            alert('Error Pengambilan Data Provinsi : ' + errorMsg);
+        }
+    })
+}
+
+ambil_prov();
+
+function ambil_kota() {
+    var prov = $('#provinsi').val().split("||");
+    var link = '{{ url("api/kota/") }}' + '/' + prov[0];
+
+    $.ajax(link, {
+        type: 'GET',
+        success : function (data, status, xhr) {
+            $('#kota').html(data);
+        },
+        error : function (jqXHR, textStatus, errorMsg) {
+            alert('Error Pengambilan Data Kota : ' + errorMsg);
+        }
+    })
+}
+
+function ambil_kecamatan() {
+    var kota = $('#kota').val().split("||");
+    var link = '{{ url("api/kecamatan/") }}' + '/' + kota[0];
+
+    $.ajax(link, {
+        type: 'GET',
+        success : function (data, status, xhr) {
+            $('#kecamatan').html(data);
+
+        },
+        error : function (jqXHR, textStatus, errorMsg) {
+            alert('Error Pengambilan Data Kecamatan : ' + errorMsg);
+        }
+    })
+}
+</script>
+@endsection
+>>>>>>> 4f3165b3487d4f1ecafca86b1b8a73bc719d37e3
