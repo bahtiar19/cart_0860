@@ -55,7 +55,7 @@ class Produk extends Controller
 
         $saved = $produk->save();
 
-        if(!$saved){
+        if (!$saved) {
             $data_json = [
                 'pesan' => 'Gagal Menambah Data',
                 'produk' => $produk,
@@ -140,7 +140,7 @@ class Produk extends Controller
             $data_db->harga = $request->get('harga_jual');
             $saved = $data_db->save();
 
-            if(!$saved){
+            if (!$saved) {
                 $data_json = [
                     'pesan' => 'Gagal Menambah Data',
                     'produk' => $data_db,
@@ -197,7 +197,7 @@ class Produk extends Controller
 
         return json_encode($data);
     }
-    
+
     public function dataDatables(Request $request)
     {
         $search = $request->query('search');
@@ -231,7 +231,7 @@ class Produk extends Controller
         }
 
         $data_db_total = Produkmodel::all();
-        $data_db_filtered = Produkmodel::where('nama_produk', 'like', '%'.$search['value'].'%');
+        $data_db_filtered = Produkmodel::where('nama_produk', 'like', '%' . $search['value'] . '%');
 
         if ($search_stok != '' && $search_stok != null) {
             $data_db_filtered = $data_db_filtered->where('stok', '<=', $search_stok);
@@ -239,31 +239,33 @@ class Produk extends Controller
 
         $data_db_filtered = $data_db_filtered->get();
 
-        $data_db = Produkmodel::where('nama_produk', 'like', '%'.$search['value'].'%');
+        $data_db = Produkmodel::where('nama_produk', 'like', '%' . $search['value'] . '%');
 
         if ($search_stok != '' && $search_stok != null) {
             $data_db = $data_db->where('stok', '<=', $search_stok);
         }
 
         $data_db = $data_db->offset($request->query('start'))
-        ->limit($request->query('length'))
-        ->orderByRaw($orderby.' '.$order[0]['dir'])
-        ->get(['produk.*']);
+            ->limit($request->query('length'))
+            ->orderByRaw($orderby . ' ' . $order[0]['dir'])
+            ->get(['produk.*']);
 
 
         $data_formatted = [];
 
         foreach ($data_db as $key => $value) {
-            $url_edit = url("produk/form"). '/' . $value->id_produk;;
-            $eventHapus = 'onclick="hapusData('.$value->id_produk.')"';
-            $event_add_to_cart = 'onclick="add_to_cart('.$value->id_produk.')"';            ;
-            $action = '<a href="'.$url_edit.'" class="btn btn-info">Ubah</a> <a href="#" '.$eventHapus.' class="btn btn-danger">Hapus</a> <hr/> <a href="#" '.$event_add_to_cart.' class="btn btn-warning">Tambahkan Ke Keranjang</a>';
+            $url_edit = url("produk/form") . '/' . $value->id_produk;
+            ;
+            $eventHapus = 'onclick="hapusData(' . $value->id_produk . ')"';
+            $event_add_to_cart = 'onclick="add_to_cart(' . $value->id_produk . ')"';
+            ;
+            $action = '<a href="' . $url_edit . '" class="btn btn-info">Ubah</a> <a href="#" ' . $eventHapus . ' class="btn btn-danger">Hapus</a> <hr/> <a href="#" ' . $event_add_to_cart . ' class="btn btn-warning">Tambahkan Ke Keranjang</a>';
 
-            $harga = 'Rp '.number_format($value->harga);
-            $image = '<img src="'.$value->foto_produk.'" width=150>';
+            $harga = 'Rp ' . number_format($value->harga);
+            $image = '<img src="foto_produk/' . $value->foto_produk . '" width=150>';
 
             $row_data = [];
-            $row_data[] = $key+1;
+            $row_data[] = $key + 1;
             $row_data[] = $value->kode_produk;
             $row_data[] = $value->nama_produk;
             $row_data[] = $value->stok;
@@ -283,5 +285,51 @@ class Produk extends Controller
         ];
 
         return json_encode($data_json);
+    }
+
+    public function store_no_api(Request $request)
+    {
+
+        // var_dump($request);
+        // die();
+        // untuk upload file
+        $request->validate([
+            'foto_produk' => 'mimes:png,jpg,jpeg|max:2048',
+        ]);
+
+        $foto = 'produk_' . $request->input('kode_produk') . '-' . time() . '.' . $request->file->extension();
+        $request->file->move(public_path('foto_produk'), $foto);
+        // end
+        $request->validate([
+            'kode_produk' => 'required|unique:produk,kode_produk',
+            'nama_produk' => 'required',
+            'deskripsi' => 'required',
+            'stok_produk' => 'required|min:1|numeric',
+            'harga_jual' => 'required|min:1000|numeric'
+        ]);
+
+        $produk = new Produkmodel([
+            'kode_produk' => $request->get('kode_produk'),
+            'nama_produk' => $request->get('nama_produk'),
+            'deskripsi' => $request->get('deskripsi'),
+            'stok' => $request->get('stok_produk'),
+            'harga' => $request->get('harga_jual'),
+            'foto_produk' => $foto,
+        ]);
+
+        $saved = $produk->save();
+        if (!$saved) {
+            $data_json = [
+                'pesan' => 'Gagal Menambah Data',
+                'produk' => $produk,
+            ];
+        } else {
+            $data_json = [
+                'pesan' => 'Sukses',
+                'produk' => $produk,
+            ];
+        }
+        
+        return redirect('/produk');
     }
 }
